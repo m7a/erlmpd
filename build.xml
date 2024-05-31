@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="build">
+
+<!-- APPLICATION METADATA -->
+<property name="masysma.target" value="erlmpd"/> 
+<property name="mdpc.name"      value="mdvl-erlmpd"/>
+<property name="mdpc.section"   value="sound"/>
+<property name="mdpc.descrs"    value="An Erlang client library for MPD"/>
+<property name="mdpc.arch"      value="all"/>
+<property name="mdpc.bdep"      value="rebar3, debhelper-compat (= 13)"/>
+<property name="mdpc.descrl">
+ A simple client library for communicating with MPD (http://mpd.wikia.com)
+ - "a flexible, powerful, server-side application for playing music"
+</property>
+<property name="mdpc.copyright"
+>Copyright (c) 2017 Caolan McMahon &lt;caolan@caolanmcmahon.com&gt;
+  Copyright (c) 2024 Ma_Sys.ma &lt;info@masysma.net&gt;</property>
+
+<property name="mdpc.file.install">
+_build/default/lib/erlmpd/ebin /usr/lib/erlang/lib/erlmpd
+src/*.??? /usr/lib/erlang/lib/erlmpd/src
+README_original.txt /usr/share/mdvl-erlmpd
+</property>
+
+<target name="build">
+	<exec executable="rebar3" failonerror="true">
+		<arg value="compile"/>
+	</exec>
+</target>
+
+<target name="clean">
+	<delete file="rebar.lock"/>
+	<delete dir="_build" followSymlinks="false" includeemptydirs="true"
+					removeNotFollowedSymlinks="true"/>
+</target>
+
+<!-- CI INTEGRATION -->
+<target name="autYYYYYoci" depends="autopackage"/>
+
+<!-- TPL IMPORT -->
+<property environment="env"/>
+<condition property="masysma.internal.includepath.rel" value="${env.MDVL_CI_PHOENIX_ROOT}" else=".."><isset property="env.MDVL_CI_PHOENIX_ROOT"/></condition>
+<property name="masysma.internal.includepath" location="${masysma.internal.includepath.rel}"/>
+<property name="masysma.internal.loadpath" value="${masysma.internal.includepath}/co-build/ant-build-template.xml"/>
+<condition property="masysma.internal.load" value="file://${masysma.internal.loadpath}" else="https://raw.githubusercontent.com/m7a/co-build/master/ant-build-template.xml"><resourceexists><file file="${masysma.internal.loadpath}"/></resourceexists></condition>
+<import><url url="${masysma.internal.load}"/></import>
+
+</project>

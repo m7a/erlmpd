@@ -1,0 +1,5 @@
+mdvl-erlmpd (1.0.0) stable; urgency=medium
+
+  * Package created with MDPC 2
+
+ -- Ma_Sys.ma Linux-Fan <info@masysma.net>  Fri, 31 May 2024 21:02:03 +0200
