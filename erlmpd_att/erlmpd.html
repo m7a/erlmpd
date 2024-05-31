@@ -1,0 +1,1235 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Module erlmpd</title>
+<link rel="stylesheet" type="text/css" href="stylesheet.css" title="EDoc">
+</head>
+<body bgcolor="white">
+<div class="navbar"><a name="#navbar_top"></a><table width="100%" border="0" cellspacing="0" cellpadding="2" summary="navigation bar"><tr><td><a href="overview-summary.html" target="overviewFrame">Overview</a></td><td><a href="http://www.erlang.org/"><img src="erlang.png" align="right" border="0" alt="erlang logo"></a></td></tr></table></div>
+<hr>
+
+<h1>Module erlmpd</h1>
+<ul class="index"><li><a href="#types">Data Types</a></li><li><a href="#index">Function Index</a></li><li><a href="#functions">Function Details</a></li></ul>
+
+<p><b>Authors:</b> Caolan McMahon (<a href="mailto:caolan@caolanmcmahon.com"><tt>caolan@caolanmcmahon.com</tt></a>).</p>
+
+<h2><a name="types">Data Types</a></h2>
+
+<h3 class="typedecl"><a name="type-any_error">any_error()</a></h3>
+<p><tt>any_error() = <a href="#type-mpd_error">mpd_error()</a> | <a href="#type-network_error">network_error()</a></tt></p>
+
+
+<h3 class="typedecl"><a name="type-filter">filter()</a></h3>
+<p><tt>filter() = {tagop, <a href="#type-tag">tag()</a>, <a href="#type-filter_op">filter_op()</a>, iolist()} | {fileeq, iolist()} | {base, iolist()} | {modified_since, iolist()} | {added_since, iolist()} | {audio_format_eq, iolist()} | {audio_format_match, iolist()} | {prio_ge, integer()} | {lnot, <a href="#type-filter">filter()</a>} | {land, [<a href="#type-filter">filter()</a>]}</tt></p>
+<p><p>  A filter specification is a (potentially nested) construction of tuples  
+consisting of several operators.</p>
+ 
+  <table cellpadding="2" cellspacing="0" border="1"><thead>
+  <tr><th>Operator</th><th>Protocol</th><th>Description</th></tr>
+  </thead><tbody>
+  <tr><td>tagop</td><td>(TAG OP 'VALUE')</td><td>
+                Checks the specified tag against the
+                iolist using the specified operator.</td></tr>
+  <tr><td>fileeq</td><td>(file == 'VALUE')</td><td>
+                Match the full song URI</td></tr>
+  <tr><td>base</td><td>(base 'VALUE')</td><td>
+                Restrict the search to songs in the given directory.</td></tr>
+  <tr><td>modified_since</td><td>(modified-since 'VALUE')</td><td>
+                compares the file's time stamp with the given value
+                (ISO-8601 or UNIX timestamp)</td></tr>
+  <tr><td>added_since</td><td>(added-since 'VALUE')</td><td>
+                compares the time stamp when the file
+                was added (same format as modified-since)</td></tr>
+  <tr><td>audio_format_eq</td><td>(AudioFormat == 'SAMPLERATE:BITS:CHANNELS')
+                </td><td>Compares the audio format</td></tr>
+  <tr><td>audio_format_match</td><td>(AudioFormat
+                =~ 'SAMPLERATE:BITS:CHANNELS')</td>
+                <td>Matches the audio format (one or more of the attributes
+                may be set to '*' for any)</td></tr>
+  <tr><td>prio_ge</td><td>(prio &gt;= 42)</td><td>
+                compares the priority of queued songs</td></tr>
+  <tr><td>lnot</td><td>(!(EXPRESSION))</td><td>
+                Logical negation of given filter</td></tr>
+  <tr><td>land</td><td>(EXPRESSION1 AND EXPRESSION 2...)</td><td>
+                Logical and of two or more filters</td></tr>
+  </tbody></table></p>
+
+<h3 class="typedecl"><a name="type-filter_op">filter_op()</a></h3>
+<p><tt>filter_op() = eq | ne | contains | starts_with | match | mismatch</tt></p>
+<p>  <table cellpadding="2" cellspacing="0" border="1"><thead>
+  <tr><th>Operator  </th><th>Protocol   </th><th>Description</th></tr>
+  </thead><tbody>
+  <tr><td>eq        </td><td>==         </td><td>Test for equality</td></tr>
+  <tr><td>ne        </td><td>!=         </td>
+                         <td>Test for mismatching</td></tr>
+  <tr><td>contains  </td><td>contains   </td>
+                         <td>Test for substring in any location</td></tr>
+  <tr><td>starts_with</td><td>starts_with</td>
+                         <td>Test for substring at begin of value</td></tr>
+  <tr><td>match     </td><td>match</td>
+                         <td>Test for regular expression</td></tr>
+  <tr><td>mismatch  </td><td>mismatch</td>
+                         <td>Negate result of regular expression test</td></tr>
+  </tbody></table></p>
+
+<h3 class="typedecl"><a name="type-mpd_conn">mpd_conn()</a></h3>
+<p><tt>mpd_conn() = #mpd_conn{port = port(), version = string()}</tt></p>
+
+
+<h3 class="typedecl"><a name="type-mpd_error">mpd_error()</a></h3>
+<p><tt>mpd_error() = #mpd_error{errorid = string(), position = string(), description = string(), reason = string()}</tt></p>
+
+
+<h3 class="typedecl"><a name="type-network_error">network_error()</a></h3>
+<p><tt>network_error() = closed | <a href="http://www.erlang.org/edoc/doc/kernel/doc/inet.html#type-posix">inet:posix()</a></tt></p>
+
+
+<h3 class="typedecl"><a name="type-tag">tag()</a></h3>
+<p><tt>tag() = artist | albumartist | album | title | track | genre | disc | date</tt></p>
+
+
+<h2><a name="index">Function Index</a></h2>
+<table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#add-2">add/2</a></td><td>
+  Adds the file Uri to the playlist (directories add recursively).</td></tr>
+<tr><td valign="top"><a href="#addid-2">addid/2</a></td><td>
+  Adds a song to the playlist (non-recursive) and returns the song id.</td></tr>
+<tr><td valign="top"><a href="#addid-3">addid/3</a></td><td>
+  Adds a song to the playlist (non-recursive) and returns the song id.</td></tr>
+<tr><td valign="top"><a href="#addid_relative-3">addid_relative/3</a></td><td>
+  Like addid, but always interprets Pos as an offset relative
+  to the currently playing song.</td></tr>
+<tr><td valign="top"><a href="#clear-1">clear/1</a></td><td>
+  Clears the current playlist.</td></tr>
+<tr><td valign="top"><a href="#clearerror-1">clearerror/1</a></td><td>
+  Clears the current error message in status (this is also accomplished
+  by any command that starts playback).</td></tr>
+<tr><td valign="top"><a href="#close-1">close/1</a></td><td>
+  Closes the connection to MPD.</td></tr>
+<tr><td valign="top"><a href="#command-2">command/2</a></td><td>
+  Same as calling command(C=#mpd_conn{}, Command, [], ?TIMEOUT).</td></tr>
+<tr><td valign="top"><a href="#command-3">command/3</a></td><td>
+  Same as calling command(C=#mpd_conn{}, Command, Args, ?TIMEOUT).</td></tr>
+<tr><td valign="top"><a href="#command-4">command/4</a></td><td>
+  Sends a command to the server and retreives the response.</td></tr>
+<tr><td valign="top"><a href="#commandlist-2">commandlist/2</a></td><td>
+  Same as calling commandlist(C=#mpd_conn{}, CommandList, ?TIMEOUT).</td></tr>
+<tr><td valign="top"><a href="#commandlist-3">commandlist/3</a></td><td>
+  To facilitate faster adding of files etc.</td></tr>
+<tr><td valign="top"><a href="#commands-1">commands/1</a></td><td>
+  Shows which commands the current user has access to.</td></tr>
+<tr><td valign="top"><a href="#connect-0">connect/0</a></td><td>
+  Attempts to connect using default settings.</td></tr>
+<tr><td valign="top"><a href="#connect-2">connect/2</a></td><td>
+  Connects to an MPD server and returns the connected socket and
+  the version number of the server.</td></tr>
+<tr><td valign="top"><a href="#connect-3">connect/3</a></td><td>
+  Convenience function which connects to an MPD server using connect/2,
+  then calls password/2.</td></tr>
+<tr><td valign="top"><a href="#consume-2">consume/2</a></td><td>
+  Sets consume state.</td></tr>
+<tr><td valign="top"><a href="#count-2">count/2</a></td><td>
+  Counts the number of songs and their total playtime in the db
+  matching the filter.</td></tr>
+<tr><td valign="top"><a href="#count-3">count/3</a></td><td>
+  Counts the number of songs and their total playtime in the db
+  matching value X for Tag exactly.</td></tr>
+<tr><td valign="top"><a href="#count_group-3">count_group/3</a></td><td>  
+Counts the number of songs and their total playtime in the db  
+for all songs matching the given filter and groups by the given  
+tag.</td></tr>
+<tr><td valign="top"><a href="#crossfade-2">crossfade/2</a></td><td>
+  Sets crossfading between songs to Secs.</td></tr>
+<tr><td valign="top"><a href="#currentsong-1">currentsong/1</a></td><td>
+  Displays the song info of the current song (same song that is
+  identified in status).</td></tr>
+<tr><td valign="top"><a href="#delete-2">delete/2</a></td><td>
+  Deletes the song from the playlist at position PlaylistPos.</td></tr>
+<tr><td valign="top"><a href="#deleteid-2">deleteid/2</a></td><td>
+  Deletes the song SongId from the playlist.</td></tr>
+<tr><td valign="top"><a href="#deleteids-2">deleteids/2</a></td><td>
+  Deletes the SongIds from the playlist, more efficient than multiple
+  calls to deleteid.</td></tr>
+<tr><td valign="top"><a href="#delpartition-2">delpartition/2</a></td><td>
+  Delete a partition.</td></tr>
+<tr><td valign="top"><a href="#disableoutput-2">disableoutput/2</a></td><td>
+  Turns off output with id OutputId.</td></tr>
+<tr><td valign="top"><a href="#disconnect-1">disconnect/1</a></td><td></td></tr>
+<tr><td valign="top"><a href="#enableoutput-2">enableoutput/2</a></td><td>
+  Turns on output with id OutputId.</td></tr>
+<tr><td valign="top"><a href="#find-2">find/2</a></td><td>
+  Finds songs in the db that match the given filter.</td></tr>
+<tr><td valign="top"><a href="#find-3">find/3</a></td><td>
+  Finds songs in the db that are exactly What.</td></tr>
+<tr><td valign="top"><a href="#idle-1">idle/1</a></td><td>
+  Waits until there is a noteworthy change in any of MPD's subsystems.</td></tr>
+<tr><td valign="top"><a href="#idle-2">idle/2</a></td><td>
+  Waits until there is a noteworthy change in one or more of MPD's
+  subsystems.</td></tr>
+<tr><td valign="top"><a href="#idle_receive-1">idle_receive/1</a></td><td>
+  Completes an idle command started with idle_send/2 by waiting
+  for the response from MPD.</td></tr>
+<tr><td valign="top"><a href="#idle_send-2">idle_send/2</a></td><td>  
+Sends an idle command to MPD but does not wait for its response.</td></tr>
+<tr><td valign="top"><a href="#kill-1">kill/1</a></td><td>
+  Kills MPD.</td></tr>
+<tr><td valign="top"><a href="#list-2">list/2</a></td><td>
+  Lists all values of the specified tag.</td></tr>
+<tr><td valign="top"><a href="#list-3">list/3</a></td><td>
+  Lists all tags of type album.</td></tr>
+<tr><td valign="top"><a href="#listall-1">listall/1</a></td><td>
+  Lists all songs and directories.</td></tr>
+<tr><td valign="top"><a href="#listall-2">listall/2</a></td><td>
+  Lists all songs and directories in Uri.</td></tr>
+<tr><td valign="top"><a href="#listallinfo-1">listallinfo/1</a></td><td>
+  Same as listall/1, except it also returns metadata info in the same
+  format as lsinfo.</td></tr>
+<tr><td valign="top"><a href="#listallinfo-2">listallinfo/2</a></td><td>
+  Same as listall/2, except it also returns metadata info in the same
+  format as lsinfo.</td></tr>
+<tr><td valign="top"><a href="#listpartitions-1">listpartitions/1</a></td><td>  
+Query the list of partitions.</td></tr>
+<tr><td valign="top"><a href="#listplaylist-2">listplaylist/2</a></td><td>
+  Lists the files in the playlist Name.m3u.</td></tr>
+<tr><td valign="top"><a href="#listplaylistinfo-2">listplaylistinfo/2</a></td><td>
+  Lists the songs in the playlist Name.m3u.</td></tr>
+<tr><td valign="top"><a href="#listplaylists-1">listplaylists/1</a></td><td>
+  Prints a list of the playlist directory.</td></tr>
+<tr><td valign="top"><a href="#load-2">load/2</a></td><td>
+  Loads the playlist Name.m3u from the playlist directory and appends
+  all tracks to the end of the current playlist.</td></tr>
+<tr><td valign="top"><a href="#lsinfo-1">lsinfo/1</a></td><td>
+  Lists the contents of the root directory.</td></tr>
+<tr><td valign="top"><a href="#lsinfo-2">lsinfo/2</a></td><td>
+  Lists the contents of the directory Uri.</td></tr>
+<tr><td valign="top"><a href="#move-3">move/3</a></td><td>
+  Moves the songs in the range Start:End (referring to position in the
+  playlist) to position To in the playlist.</td></tr>
+<tr><td valign="top"><a href="#moveid-3">moveid/3</a></td><td>
+  Moves the song with From (songid) to To (playlist index) in the
+  playlist.</td></tr>
+<tr><td valign="top"><a href="#moveoutput-2">moveoutput/2</a></td><td>
+  Move an output to the current partition.</td></tr>
+<tr><td valign="top"><a href="#newpartition-2">newpartition/2</a></td><td>
+  Create a new partition.</td></tr>
+<tr><td valign="top"><a href="#next-1">next/1</a></td><td>
+  Plays next song in the playlist.</td></tr>
+<tr><td valign="top"><a href="#noidle-1">noidle/1</a></td><td>
+  Interrupts an ongoing idle call and makes it return.</td></tr>
+<tr><td valign="top"><a href="#notcommands-1">notcommands/1</a></td><td>
+  Shows which commands the current user does not have access to.</td></tr>
+<tr><td valign="top"><a href="#outputs-1">outputs/1</a></td><td>
+  Shows information about all outputs.</td></tr>
+<tr><td valign="top"><a href="#partition-2">partition/2</a></td><td>
+  Switch the client to a different partition.</td></tr>
+<tr><td valign="top"><a href="#password-2">password/2</a></td><td>
+  This is used for authentication with the server.</td></tr>
+<tr><td valign="top"><a href="#pause-2">pause/2</a></td><td>
+  Sets pause state.</td></tr>
+<tr><td valign="top"><a href="#ping-1">ping/1</a></td><td>
+  Does nothing but return ok.</td></tr>
+<tr><td valign="top"><a href="#play-1">play/1</a></td><td>
+  Begins playling playlist.</td></tr>
+<tr><td valign="top"><a href="#play-2">play/2</a></td><td>
+  Begins playling playlist at song number Pos.</td></tr>
+<tr><td valign="top"><a href="#playid-1">playid/1</a></td><td>
+  Begins playling playlist.</td></tr>
+<tr><td valign="top"><a href="#playid-2">playid/2</a></td><td>
+  Begins playling playlist at song with songid Id.</td></tr>
+<tr><td valign="top"><a href="#playlist-1">playlist/1</a></td><td>
+  Displays the current playlist.</td></tr>
+<tr><td valign="top"><a href="#playlistadd-3">playlistadd/3</a></td><td>
+  Adds URI to the playlist Name.m3u.</td></tr>
+<tr><td valign="top"><a href="#playlistclear-2">playlistclear/2</a></td><td>
+  Clears the playlist Name.m3u.</td></tr>
+<tr><td valign="top"><a href="#playlistdelete-3">playlistdelete/3</a></td><td>
+  Deletes PlaylistPos from the playlist Name.m3u.</td></tr>
+<tr><td valign="top"><a href="#playlistfind-3">playlistfind/3</a></td><td>
+  Finds songs in the current playlist with strict matching.</td></tr>
+<tr><td valign="top"><a href="#playlistid-1">playlistid/1</a></td><td>
+  Displays a list of songs in the playlist.</td></tr>
+<tr><td valign="top"><a href="#playlistid-2">playlistid/2</a></td><td>
+  Displays info for song in playlist with specified id.</td></tr>
+<tr><td valign="top"><a href="#playlistinfo-1">playlistinfo/1</a></td><td>
+  Displays a list of all songs in the playlist.</td></tr>
+<tr><td valign="top"><a href="#playlistinfo-2">playlistinfo/2</a></td><td>
+  Displays a list of songs between Start and End positions in the
+  playlist (exclusive of end position).</td></tr>
+<tr><td valign="top"><a href="#playlistmove-4">playlistmove/4</a></td><td>
+  Moves SongId in the playlist Name.m3u, to the postion PlaylistPos.</td></tr>
+<tr><td valign="top"><a href="#playlistsearch-3">playlistsearch/3</a></td><td>
+  Searches case-sensitively for partial matches in the current playlist.</td></tr>
+<tr><td valign="top"><a href="#plchanges-2">plchanges/2</a></td><td>
+  Displays changed songs currently in the playlist since Ver.</td></tr>
+<tr><td valign="top"><a href="#plchangesposid-2">plchangesposid/2</a></td><td>
+  Displays changed songs currently in the playlist since Ver.</td></tr>
+<tr><td valign="top"><a href="#previous-1">previous/1</a></td><td>
+  Plays previous song in the playlist.</td></tr>
+<tr><td valign="top"><a href="#random-2">random/2</a></td><td>
+  Sets random state.</td></tr>
+<tr><td valign="top"><a href="#rename-3">rename/3</a></td><td>
+  Renames the playlist Name.m3u to NewName.m3u.</td></tr>
+<tr><td valign="top"><a href="#repeat-2">repeat/2</a></td><td>
+  Sets repeat state.</td></tr>
+<tr><td valign="top"><a href="#rm-2">rm/2</a></td><td>
+  Removes the playlist NAME.m3u from the playlist directory.</td></tr>
+<tr><td valign="top"><a href="#save-2">save/2</a></td><td>
+  Saves the current playlist to Name.m3u in the playlist directory.</td></tr>
+<tr><td valign="top"><a href="#search-3">search/3</a></td><td>
+  Searches for any song with a the specified tag's value containing What.</td></tr>
+<tr><td valign="top"><a href="#seek-3">seek/3</a></td><td>
+  Seeks to the position SeekSecs (in seconds) of entry PlaylistPos in
+  the playlist.</td></tr>
+<tr><td valign="top"><a href="#seekid-3">seekid/3</a></td><td>
+  Seeks to the position SeekSecs (in seconds) of song SongId.</td></tr>
+<tr><td valign="top"><a href="#setvol-2">setvol/2</a></td><td>
+  Sets volume to Vol, the range of volume is 0-100.</td></tr>
+<tr><td valign="top"><a href="#shuffle-1">shuffle/1</a></td><td>
+  Shuffles the current playlist.</td></tr>
+<tr><td valign="top"><a href="#shuffle-2">shuffle/2</a></td><td>
+  Shuffles the songs between the Start and End positions in the current
+  playlist.</td></tr>
+<tr><td valign="top"><a href="#single-2">single/2</a></td><td>
+  Sets single state.</td></tr>
+<tr><td valign="top"><a href="#stats-1">stats/1</a></td><td>
+  Displays statistics.</td></tr>
+<tr><td valign="top"><a href="#status-1">status/1</a></td><td>
+  Reports the current status of the player and the volume level.</td></tr>
+<tr><td valign="top"><a href="#sticker_delete-3">sticker_delete/3</a></td><td>
+  Delete all stickers associated to the given type and URI.</td></tr>
+<tr><td valign="top"><a href="#sticker_delete-4">sticker_delete/4</a></td><td>
+  Delete specific sticker by Type, URI and Name.</td></tr>
+<tr><td valign="top"><a href="#sticker_find-4">sticker_find/4</a></td><td>  
+Search for stickers of the specified type and name below the  
+specified URI prefix (can be empty to retrieve all stickers).</td></tr>
+<tr><td valign="top"><a href="#sticker_get-4">sticker_get/4</a></td><td>
+  Get value of specific sticker by Type, URI and Name.</td></tr>
+<tr><td valign="top"><a href="#sticker_list-3">sticker_list/3</a></td><td>
+  Retrieve all stickers associated to the given type and URI.</td></tr>
+<tr><td valign="top"><a href="#sticker_set-5">sticker_set/5</a></td><td>
+  Assign sticker value by Type, URI and Name.</td></tr>
+<tr><td valign="top"><a href="#stop-1">stop/1</a></td><td>
+  Stops playing.</td></tr>
+<tr><td valign="top"><a href="#swap-3">swap/3</a></td><td>
+  Swaps the positions of songs at PlaylistPos1 and PlaylistPos2.</td></tr>
+<tr><td valign="top"><a href="#swapid-3">swapid/3</a></td><td>
+  Swaps the positions of songs SongId1 and SongId2.</td></tr>
+<tr><td valign="top"><a href="#tagtypes-1">tagtypes/1</a></td><td>
+  Shows a list of available song metadata.</td></tr>
+<tr><td valign="top"><a href="#update-1">update/1</a></td><td>
+  Updates the music database.</td></tr>
+<tr><td valign="top"><a href="#update-2">update/2</a></td><td>
+  Updates the music database.</td></tr>
+<tr><td valign="top"><a href="#urlhandlers-1">urlhandlers/1</a></td><td>
+  Gets a list of available URL handlers.</td></tr>
+<tr><td valign="top"><a href="#version-1">version/1</a></td><td>
+  Returns a string representing the MPD version number for Connection.</td></tr>
+</table>
+
+<h2><a name="functions">Function Details</a></h2>
+
+<h3 class="function"><a name="add-2">add/2</a></h3>
+<div class="spec">
+<p><tt>add(C::<a href="#type-mpd_conn">mpd_conn()</a>, Uri::string()) -&gt; ok | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Adds the file Uri to the playlist (directories add recursively).
+  Uri can also be a single file.</p>
+
+<h3 class="function"><a name="addid-2">addid/2</a></h3>
+<div class="spec">
+<p><tt>addid(C::<a href="#type-mpd_conn">mpd_conn()</a>, Uri::string()) -&gt; integer() | binary() | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Adds a song to the playlist (non-recursive) and returns the song id.
+  Uri is always a single file or URL.</p>
+
+<h3 class="function"><a name="addid-3">addid/3</a></h3>
+<div class="spec">
+<p><tt>addid(C::<a href="#type-mpd_conn">mpd_conn()</a>, Uri::string(), Pos::integer()) -&gt; integer() | binary() | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Adds a song to the playlist (non-recursive) and returns the song id.
+  Uri is always a single file or URL. Pos is the position in the playlist
+  to add it, a negative number means it is relative to the currently
+  playing song in the playlist (if there is one).</p>
+
+<h3 class="function"><a name="addid_relative-3">addid_relative/3</a></h3>
+<div class="spec">
+<p><tt>addid_relative(C::<a href="#type-mpd_conn">mpd_conn()</a>, Uri::string(), Pos::integer()) -&gt; integer() | binary() | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Like addid, but always interprets Pos as an offset relative
+  to the currently playing song. Use Pos = 0 to add an entry right
+  after the currently playing song.</p>
+
+<h3 class="function"><a name="clear-1">clear/1</a></h3>
+<div class="spec">
+<p><tt>clear(C::<a href="#type-mpd_conn">mpd_conn()</a>) -&gt; ok | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Clears the current playlist.</p>
+
+<h3 class="function"><a name="clearerror-1">clearerror/1</a></h3>
+<div class="spec">
+<p><tt>clearerror(C::<a href="#type-mpd_conn">mpd_conn()</a>) -&gt; ok | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Clears the current error message in status (this is also accomplished
+  by any command that starts playback).</p>
+
+<h3 class="function"><a name="close-1">close/1</a></h3>
+<div class="spec">
+<p><tt>close(C::<a href="#type-mpd_conn">mpd_conn()</a>) -&gt; ok</tt><br></p>
+<p> </p>
+</div><p>
+  Closes the connection to MPD.</p>
+
+<h3 class="function"><a name="command-2">command/2</a></h3>
+<div class="spec">
+<p><tt>command(C::<a href="#type-mpd_conn">mpd_conn()</a>, Command::string()) -&gt; list() | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Same as calling command(C=#mpd_conn{}, Command, [], ?TIMEOUT)</p>
+
+<h3 class="function"><a name="command-3">command/3</a></h3>
+<div class="spec">
+<p><tt>command(C::<a href="#type-mpd_conn">mpd_conn()</a>, Command::string(), Args::list()) -&gt; list() | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Same as calling command(C=#mpd_conn{}, Command, Args, ?TIMEOUT)</p>
+
+<h3 class="function"><a name="command-4">command/4</a></h3>
+<div class="spec">
+<p><tt>command(C::<a href="#type-mpd_conn">mpd_conn()</a>, Command::string(), Args::list(), Timeout::integer()) -&gt; list() | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Sends a command to the server and retreives the response.
+  You should not need to use this directly, apart from where
+  parts of the API have not been implemented by this module</p>
+
+<h3 class="function"><a name="commandlist-2">commandlist/2</a></h3>
+<div class="spec">
+<p><tt>commandlist(C::<a href="#type-mpd_conn">mpd_conn()</a>, CommandList::[{Command::iolist(), Args::[string()]}]) -&gt; list() | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Same as calling commandlist(C=#mpd_conn{}, CommandList, ?TIMEOUT)</p>
+
+<h3 class="function"><a name="commandlist-3">commandlist/3</a></h3>
+<div class="spec">
+<p><tt>commandlist(C::<a href="#type-mpd_conn">mpd_conn()</a>, CommandList::[{Command::iolist(), Args::[string()]}], Timeout::integer()) -&gt; list() | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  To facilitate faster adding of files etc. you can pass a list of
+  commands all at once using a command list. The return value is whatever
+  the return for a list of commands is. If a command fails, no more
+  commands are executed and the appropriate mpd error is returned.</p>
+
+<h3 class="function"><a name="commands-1">commands/1</a></h3>
+<div class="spec">
+<p><tt>commands(C::<a href="#type-mpd_conn">mpd_conn()</a>) -&gt; [binary()] | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Shows which commands the current user has access to</p>
+
+<h3 class="function"><a name="connect-0">connect/0</a></h3>
+<div class="spec">
+<p><tt>connect() -&gt; {ok, <a href="#type-mpd_conn">mpd_conn()</a>} | {error, <a href="#type-network_error">network_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Attempts to connect using default settings. Same as calling
+  connect("localhost", 6600).</p>
+
+<h3 class="function"><a name="connect-2">connect/2</a></h3>
+<div class="spec">
+<p><tt>connect(Addr::string(), Port::integer()) -&gt; {ok, <a href="#type-mpd_conn">mpd_conn()</a>} | {error, <a href="#type-network_error">network_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Connects to an MPD server and returns the connected socket and
+  the version number of the server.</p>
+
+<h3 class="function"><a name="connect-3">connect/3</a></h3>
+<div class="spec">
+<p><tt>connect(Addr::string(), Port::integer(), Pass::string) -&gt; {ok, <a href="#type-mpd_conn">mpd_conn()</a>} | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Convenience function which connects to an MPD server using connect/2,
+  then calls password/2.</p>
+
+<h3 class="function"><a name="consume-2">consume/2</a></h3>
+<div class="spec">
+<p><tt>consume(C::<a href="#type-mpd_conn">mpd_conn()</a>, State::boolean()) -&gt; ok | {error, mpd_version | <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Sets consume state. When consume is activated, each song played is
+  removed from playlist. Available since MPD 0.15.</p>
+
+<h3 class="function"><a name="count-2">count/2</a></h3>
+<div class="spec">
+<p><tt>count(C::<a href="#type-mpd_conn">mpd_conn()</a>, Filter::<a href="#type-filter">filter()</a>) -&gt; list() | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Counts the number of songs and their total playtime in the db
+  matching the filter</p>
+
+<h3 class="function"><a name="count-3">count/3</a></h3>
+<div class="spec">
+<p><tt>count(C::<a href="#type-mpd_conn">mpd_conn()</a>, Tag::<a href="#type-tag">tag()</a>, X::string()) -&gt; list() | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Counts the number of songs and their total playtime in the db
+  matching value X for Tag exactly.</p>
+
+<h3 class="function"><a name="count_group-3">count_group/3</a></h3>
+<div class="spec">
+<p><tt>count_group(C::<a href="#type-mpd_conn">mpd_conn()</a>, Tag::<a href="#type-tag">tag()</a>, Filter::<a href="#type-filter">filter()</a>) -&gt; list() | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p><p>  
+Counts the number of songs and their total playtime in the db  
+for all songs matching the given filter and groups by the given  
+tag.</p>
+ 
+  Example: erlmpd:count_group(Conn, artist, {base, ""}).
+  returns a list like this:
+  [
+  	[{'Artist',&lt;&lt;"Ace Of Base"&gt;&gt;},{songs,13},{playtime,2944}],
+  	[{'Artist',&lt;&lt;"Adele"&gt;&gt;},{songs,1},{playtime,286}],
+  	[{'Artist',&lt;&lt;"Alan Silvestri"&gt;&gt;},{songs,1},{playtime,164}]
+  ]</p>
+
+<h3 class="function"><a name="crossfade-2">crossfade/2</a></h3>
+<div class="spec">
+<p><tt>crossfade(C::<a href="#type-mpd_conn">mpd_conn()</a>, Secs::integer()) -&gt; ok | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Sets crossfading between songs to Secs.</p>
+
+<h3 class="function"><a name="currentsong-1">currentsong/1</a></h3>
+<div class="spec">
+<p><tt>currentsong(C::<a href="#type-mpd_conn">mpd_conn()</a>) -&gt; list() | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Displays the song info of the current song (same song that is
+  identified in status).</p>
+
+<h3 class="function"><a name="delete-2">delete/2</a></h3>
+<div class="spec">
+<p><tt>delete(C::<a href="#type-mpd_conn">mpd_conn()</a>, PlaylistPos::integer()) -&gt; ok | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Deletes the song from the playlist at position PlaylistPos.</p>
+
+<h3 class="function"><a name="deleteid-2">deleteid/2</a></h3>
+<div class="spec">
+<p><tt>deleteid(C::<a href="#type-mpd_conn">mpd_conn()</a>, SongId::integer()) -&gt; ok | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Deletes the song SongId from the playlist.</p>
+
+<h3 class="function"><a name="deleteids-2">deleteids/2</a></h3>
+<div class="spec">
+<p><tt>deleteids(C::<a href="#type-mpd_conn">mpd_conn()</a>, SongIds::[integer()]) -&gt; ok | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Deletes the SongIds from the playlist, more efficient than multiple
+  calls to deleteid.</p>
+
+<h3 class="function"><a name="delpartition-2">delpartition/2</a></h3>
+<div class="spec">
+<p><tt>delpartition(C::<a href="#type-mpd_conn">mpd_conn()</a>, Name::string()) -&gt; ok | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Delete a partition. The partition must be empty
+  (no connected clients and no associated outputs).</p>
+
+<h3 class="function"><a name="disableoutput-2">disableoutput/2</a></h3>
+<div class="spec">
+<p><tt>disableoutput(C::<a href="#type-mpd_conn">mpd_conn()</a>, OutputId::integer()) -&gt; ok | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Turns off output with id OutputId</p>
+
+<h3 class="function"><a name="disconnect-1">disconnect/1</a></h3>
+<div class="spec">
+<p><tt>disconnect(C::<a href="#type-mpd_conn">mpd_conn()</a>) -&gt; ok</tt><br></p>
+<p> </p>
+</div>
+
+<h3 class="function"><a name="enableoutput-2">enableoutput/2</a></h3>
+<div class="spec">
+<p><tt>enableoutput(C::<a href="#type-mpd_conn">mpd_conn()</a>, OutputId::integer()) -&gt; ok | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Turns on output with id OutputId</p>
+
+<h3 class="function"><a name="find-2">find/2</a></h3>
+<div class="spec">
+<p><tt>find(C::<a href="#type-mpd_conn">mpd_conn()</a>, Filter::<a href="#type-filter">filter()</a>) -&gt; list() | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Finds songs in the db that match the given filter.</p>
+
+<h3 class="function"><a name="find-3">find/3</a></h3>
+<div class="spec">
+<p><tt>find(C::<a href="#type-mpd_conn">mpd_conn()</a>, Tag::<a href="#type-tag">tag()</a>, X::string()) -&gt; list() | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Finds songs in the db that are exactly What. Tag should be album,
+  artist, or title. X is what to find.</p>
+
+<h3 class="function"><a name="idle-1">idle/1</a></h3>
+<div class="spec">
+<p><tt>idle(C::<a href="#type-mpd_conn">mpd_conn()</a>) -&gt; [atom()] | {error, mpd_version}</tt><br></p>
+<p> </p>
+</div><p>
+  Waits until there is a noteworthy change in any of MPD's subsystems.
+  Same as calling idle(C=#mpd_conn{}, []).</p>
+
+<h3 class="function"><a name="idle-2">idle/2</a></h3>
+<div class="spec">
+<p><tt>idle(C::<a href="#type-mpd_conn">mpd_conn()</a>, Subsystems::[atom()]) -&gt; [atom()] | {error, mpd_version | <a href="#type-network_error">network_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Waits until there is a noteworthy change in one or more of MPD's
+  subsystems. As soon as there is one, it lists all changed subsystems
+  where a subsystem is one of the following:
+  <ul>
+    <li>database: the song database has been modified after update.</li>
+    <li>update: a database update has started or finished. If the
+        database was modified during the update, the database event is
+        also emitted.</li>
+    <li>stored_playlist: a stored playlist has been modified, renamed,
+        created or deleted </li>
+    <li>playlist: the current playlist has been modified</li>
+    <li>player: the player has been started, stopped or seeked</li>
+    <li>mixer: the volume has been changed</li>
+    <li>output: an audio output has been enabled or disabled</li>
+    <li>options: options like repeat, random, crossfade</li>
+  </ul>
+ 
+  <p>This call is equivalent to calling idle_send/2 and idle_receive/1  
+in sequence. See their respective documentations for why it might  
+make sense to rely on those functions directly in certain cases.</p>
+ 
+  Available since MPD 0.14.</p>
+
+<h3 class="function"><a name="idle_receive-1">idle_receive/1</a></h3>
+<div class="spec">
+<p><tt>idle_receive(C::<a href="#type-mpd_conn">mpd_conn()</a>) -&gt; [atom()] | {error, <a href="#type-network_error">network_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Completes an idle command started with idle_send/2 by waiting
+  for the response from MPD. Note that this wait is indefinite
+  (no timeout)</p>
+
+<h3 class="function"><a name="idle_send-2">idle_send/2</a></h3>
+<div class="spec">
+<p><tt>idle_send(C::<a href="#type-mpd_conn">mpd_conn()</a>, Subsystems::[atom()]) -&gt; ok | {error, mpd_version | <a href="#type-network_error">network_error()</a>}</tt><br></p>
+<p> </p>
+</div><p><p>  
+Sends an idle command to MPD but does not wait for its response.  
+The next call to the API should be idle_receive/1 or noidle/1.</p>
+ 
+  Having two separate functions in place of the convenience idle/2
+  allows keeping track of what is being sent over the TCP channel
+  because that is what matters to MPD. Specifically, if you want to
+  asynchronously cancel an idle command with noidle, you MUST
+  ensure that idle_send/2 was called before the noidle! The best
+  way to establish this is to assume that the idle command was sent
+  as soon as idle_send/2 returns, thus the utility of this function.</p>
+
+<h3 class="function"><a name="kill-1">kill/1</a></h3>
+<div class="spec">
+<p><tt>kill(C::<a href="#type-mpd_conn">mpd_conn()</a>) -&gt; ok</tt><br></p>
+<p> </p>
+</div><p>
+  Kills MPD.</p>
+
+<h3 class="function"><a name="list-2">list/2</a></h3>
+<div class="spec">
+<p><tt>list(C::<a href="#type-mpd_conn">mpd_conn()</a>, Tag::<a href="#type-tag">tag()</a>) -&gt; list() | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Lists all values of the specified tag.</p>
+
+<h3 class="function"><a name="list-3">list/3</a></h3>
+<div class="spec">
+<p><tt>list(C::<a href="#type-mpd_conn">mpd_conn()</a>, X2::album, Artist::string()) -&gt; list() | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Lists all tags of type album. Artist specifies the artist to list
+  albums by.</p>
+
+<h3 class="function"><a name="listall-1">listall/1</a></h3>
+<div class="spec">
+<p><tt>listall(C::<a href="#type-mpd_conn">mpd_conn()</a>) -&gt; list() | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Lists all songs and directories.</p>
+
+<h3 class="function"><a name="listall-2">listall/2</a></h3>
+<div class="spec">
+<p><tt>listall(C::<a href="#type-mpd_conn">mpd_conn()</a>, Uri::string()) -&gt; list() | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Lists all songs and directories in Uri.</p>
+
+<h3 class="function"><a name="listallinfo-1">listallinfo/1</a></h3>
+<div class="spec">
+<p><tt>listallinfo(C::<a href="#type-mpd_conn">mpd_conn()</a>) -&gt; list() | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Same as listall/1, except it also returns metadata info in the same
+  format as lsinfo.</p>
+
+<h3 class="function"><a name="listallinfo-2">listallinfo/2</a></h3>
+<div class="spec">
+<p><tt>listallinfo(C::<a href="#type-mpd_conn">mpd_conn()</a>, Uri::string()) -&gt; list() | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Same as listall/2, except it also returns metadata info in the same
+  format as lsinfo.</p>
+
+<h3 class="function"><a name="listpartitions-1">listpartitions/1</a></h3>
+<div class="spec">
+<p><tt>listpartitions(C::<a href="#type-mpd_conn">mpd_conn()</a>) -&gt; [list()] | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p><p>  
+Query the list of partitions. Returns a list of proplists each of  
+which at least contain property partition to identify the name  
+of the partition. Other properties may exist to contain  
+information about the partition (as per the MPD protocol spec).</p>
+ 
+  Example return value: [[{partition,&lt;&lt;"default"&gt;&gt;}]]</p>
+
+<h3 class="function"><a name="listplaylist-2">listplaylist/2</a></h3>
+<div class="spec">
+<p><tt>listplaylist(C::<a href="#type-mpd_conn">mpd_conn()</a>, Name::string()) -&gt; [binary()] | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Lists the files in the playlist Name.m3u.</p>
+
+<h3 class="function"><a name="listplaylistinfo-2">listplaylistinfo/2</a></h3>
+<div class="spec">
+<p><tt>listplaylistinfo(C::<a href="#type-mpd_conn">mpd_conn()</a>, Name::string()) -&gt; list() | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Lists the songs in the playlist Name.m3u.</p>
+
+<h3 class="function"><a name="listplaylists-1">listplaylists/1</a></h3>
+<div class="spec">
+<p><tt>listplaylists(C::<a href="#type-mpd_conn">mpd_conn()</a>) -&gt; list() | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Prints a list of the playlist directory.
+  After each playlist name the server sends its last modification time
+  as "Last-Modified" in ISO 8601 format. To avoid problems due to clock
+  differences between clients and the server, clients should not compare
+  this value with their local clock.</p>
+
+<h3 class="function"><a name="load-2">load/2</a></h3>
+<div class="spec">
+<p><tt>load(C::<a href="#type-mpd_conn">mpd_conn()</a>, Name::string()) -&gt; ok | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Loads the playlist Name.m3u from the playlist directory and appends
+  all tracks to the end of the current playlist.</p>
+
+<h3 class="function"><a name="lsinfo-1">lsinfo/1</a></h3>
+<div class="spec">
+<p><tt>lsinfo(C::<a href="#type-mpd_conn">mpd_conn()</a>) -&gt; list() | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Lists the contents of the root directory. This currently returns the
+  list of stored playlists. This behavior is deprecated; use
+  listplaylists instead.</p>
+
+<h3 class="function"><a name="lsinfo-2">lsinfo/2</a></h3>
+<div class="spec">
+<p><tt>lsinfo(C::<a href="#type-mpd_conn">mpd_conn()</a>, Uri::string()) -&gt; list() | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Lists the contents of the directory Uri.</p>
+
+<h3 class="function"><a name="move-3">move/3</a></h3>
+<div class="spec">
+<p><tt>move(C::<a href="#type-mpd_conn">mpd_conn()</a>, From::{Start::integer(), End::integer()} | (From::integer()), To::integer()) -&gt; ok | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Moves the songs in the range Start:End (referring to position in the
+  playlist) to position To in the playlist. Available since MPD 0.15.</p>
+
+<h3 class="function"><a name="moveid-3">moveid/3</a></h3>
+<div class="spec">
+<p><tt>moveid(C::<a href="#type-mpd_conn">mpd_conn()</a>, From::integer(), To::integer()) -&gt; ok | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Moves the song with From (songid) to To (playlist index) in the
+  playlist. If To is negative, it is relative to the current song in
+  the playlist (if there is one).</p>
+
+<h3 class="function"><a name="moveoutput-2">moveoutput/2</a></h3>
+<div class="spec">
+<p><tt>moveoutput(C::<a href="#type-mpd_conn">mpd_conn()</a>, Name::string()) -&gt; ok | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Move an output to the current partition.
+  Unlike other output-control functions this one takes the name of
+  the output rather than the ID.</p>
+
+<h3 class="function"><a name="newpartition-2">newpartition/2</a></h3>
+<div class="spec">
+<p><tt>newpartition(C::<a href="#type-mpd_conn">mpd_conn()</a>, Name::string()) -&gt; ok | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Create a new partition.</p>
+
+<h3 class="function"><a name="next-1">next/1</a></h3>
+<div class="spec">
+<p><tt>next(C::<a href="#type-mpd_conn">mpd_conn()</a>) -&gt; ok | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Plays next song in the playlist</p>
+
+<h3 class="function"><a name="noidle-1">noidle/1</a></h3>
+<div class="spec">
+<p><tt>noidle(C::<a href="#type-mpd_conn">mpd_conn()</a>) -&gt; ok | {error, <a href="#type-network_error">network_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Interrupts an ongoing idle call and makes it return.
+  In order for this to work reliably, it must only be called
+  after idle_send/2 has completed. Since it can be hard to ensure
+  this ordering when using the idle/2 and idle/1 calls alone, users
+  of this API function are advised to keep track of the state of
+  the connection by using the more fine-grained idle invocations
+  provided by the idle_send/2 and idle_receive/1 APIs.</p>
+
+<h3 class="function"><a name="notcommands-1">notcommands/1</a></h3>
+<div class="spec">
+<p><tt>notcommands(C::<a href="#type-mpd_conn">mpd_conn()</a>) -&gt; [binary()] | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Shows which commands the current user does not have access to</p>
+
+<h3 class="function"><a name="outputs-1">outputs/1</a></h3>
+<div class="spec">
+<p><tt>outputs(C::<a href="#type-mpd_conn">mpd_conn()</a>) -&gt; list() | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Shows information about all outputs.</p>
+
+<h3 class="function"><a name="partition-2">partition/2</a></h3>
+<div class="spec">
+<p><tt>partition(C::<a href="#type-mpd_conn">mpd_conn()</a>, Name::string()) -&gt; ok | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Switch the client to a different partition.</p>
+
+<h3 class="function"><a name="password-2">password/2</a></h3>
+<div class="spec">
+<p><tt>password(C::<a href="#type-mpd_conn">mpd_conn()</a>, Password::string()) -&gt; ok | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  This is used for authentication with the server. Password is simply
+  the plaintext password.</p>
+
+<h3 class="function"><a name="pause-2">pause/2</a></h3>
+<div class="spec">
+<p><tt>pause(C::<a href="#type-mpd_conn">mpd_conn()</a>, X2::boolean()) -&gt; ok | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Sets pause state. Toggles pause/resumes playing.</p>
+
+<h3 class="function"><a name="ping-1">ping/1</a></h3>
+<div class="spec">
+<p><tt>ping(C::<a href="#type-mpd_conn">mpd_conn()</a>) -&gt; ok | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Does nothing but return ok.</p>
+
+<h3 class="function"><a name="play-1">play/1</a></h3>
+<div class="spec">
+<p><tt>play(C::<a href="#type-mpd_conn">mpd_conn()</a>) -&gt; ok | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Begins playling playlist.</p>
+
+<h3 class="function"><a name="play-2">play/2</a></h3>
+<div class="spec">
+<p><tt>play(C::<a href="#type-mpd_conn">mpd_conn()</a>, Pos::integer()) -&gt; ok | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Begins playling playlist at song number Pos.</p>
+
+<h3 class="function"><a name="playid-1">playid/1</a></h3>
+<div class="spec">
+<p><tt>playid(C::<a href="#type-mpd_conn">mpd_conn()</a>) -&gt; ok | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Begins playling playlist.</p>
+
+<h3 class="function"><a name="playid-2">playid/2</a></h3>
+<div class="spec">
+<p><tt>playid(C::<a href="#type-mpd_conn">mpd_conn()</a>, Id::integer()) -&gt; ok | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Begins playling playlist at song with songid Id.</p>
+
+<h3 class="function"><a name="playlist-1">playlist/1</a></h3>
+<div class="spec">
+<p><tt>playlist(C::<a href="#type-mpd_conn">mpd_conn()</a>) -&gt; [binary()]</tt><br></p>
+<p> </p>
+</div><p>
+  Displays the current playlist.
+  <strong>Note:</strong> Do not use this, instead use playlistinfo.</p>
+
+<h3 class="function"><a name="playlistadd-3">playlistadd/3</a></h3>
+<div class="spec">
+<p><tt>playlistadd(C::<a href="#type-mpd_conn">mpd_conn()</a>, Name::string(), Uri::string()) -&gt; ok | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Adds URI to the playlist Name.m3u. Name.m3u will be created if it
+  does not exist.</p>
+
+<h3 class="function"><a name="playlistclear-2">playlistclear/2</a></h3>
+<div class="spec">
+<p><tt>playlistclear(C::<a href="#type-mpd_conn">mpd_conn()</a>, Name::string()) -&gt; ok | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Clears the playlist Name.m3u.</p>
+
+<h3 class="function"><a name="playlistdelete-3">playlistdelete/3</a></h3>
+<div class="spec">
+<p><tt>playlistdelete(C::<a href="#type-mpd_conn">mpd_conn()</a>, Name::string(), PlaylistPos::integer()) -&gt; ok | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Deletes PlaylistPos from the playlist Name.m3u.</p>
+
+<h3 class="function"><a name="playlistfind-3">playlistfind/3</a></h3>
+<div class="spec">
+<p><tt>playlistfind(C::<a href="#type-mpd_conn">mpd_conn()</a>, Tag::<a href="#type-tag">tag()</a>, X::string()) -&gt; list() | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Finds songs in the current playlist with strict matching.
+  Tag can be artist | album | title | track | genre | disc | date ...
+  consiting of an atom representing most song meta tags (including
+  MUSICBRAINZ data)</p>
+
+<h3 class="function"><a name="playlistid-1">playlistid/1</a></h3>
+<div class="spec">
+<p><tt>playlistid(C::<a href="#type-mpd_conn">mpd_conn()</a>) -&gt; list() | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Displays a list of songs in the playlist.</p>
+
+<h3 class="function"><a name="playlistid-2">playlistid/2</a></h3>
+<div class="spec">
+<p><tt>playlistid(C::<a href="#type-mpd_conn">mpd_conn()</a>, Id::integer()) -&gt; list() | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Displays info for song in playlist with specified id.</p>
+
+<h3 class="function"><a name="playlistinfo-1">playlistinfo/1</a></h3>
+<div class="spec">
+<p><tt>playlistinfo(C::<a href="#type-mpd_conn">mpd_conn()</a>) -&gt; list() | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Displays a list of all songs in the playlist.</p>
+
+<h3 class="function"><a name="playlistinfo-2">playlistinfo/2</a></h3>
+<div class="spec">
+<p><tt>playlistinfo(C::<a href="#type-mpd_conn">mpd_conn()</a>, PlaylistPos::{Start::integer(), End::integer()} | (PlaylistPos::integer())) -&gt; list() | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Displays a list of songs between Start and End positions in the
+  playlist (exclusive of end position). Available since MPD 0.15.</p>
+
+<h3 class="function"><a name="playlistmove-4">playlistmove/4</a></h3>
+<div class="spec">
+<p><tt>playlistmove(C::<a href="#type-mpd_conn">mpd_conn()</a>, Name::string(), SongId::string(), PlaylistPos::integer()) -&gt; ok | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Moves SongId in the playlist Name.m3u, to the postion PlaylistPos.</p>
+
+<h3 class="function"><a name="playlistsearch-3">playlistsearch/3</a></h3>
+<div class="spec">
+<p><tt>playlistsearch(C::<a href="#type-mpd_conn">mpd_conn()</a>, Tag::<a href="#type-tag">tag()</a>, X::string()) -&gt; list() | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Searches case-sensitively for partial matches in the current playlist.</p>
+
+<h3 class="function"><a name="plchanges-2">plchanges/2</a></h3>
+<div class="spec">
+<p><tt>plchanges(C::<a href="#type-mpd_conn">mpd_conn()</a>, Ver::integer()) -&gt; list() | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Displays changed songs currently in the playlist since Ver.
+  To detect songs that were deleted at the end of the playlist,
+  use playlistlength returned by status command.</p>
+
+<h3 class="function"><a name="plchangesposid-2">plchangesposid/2</a></h3>
+<div class="spec">
+<p><tt>plchangesposid(C::<a href="#type-mpd_conn">mpd_conn()</a>, Ver::integer()) -&gt; list() | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Displays changed songs currently in the playlist since Ver.
+  This function only returns the position and the id of the changed
+  song, not the complete metadata. This is more bandwidth efficient.
+  To detect songs that were deleted at the end of the playlist,
+  use playlistlength returned by status command.</p>
+
+<h3 class="function"><a name="previous-1">previous/1</a></h3>
+<div class="spec">
+<p><tt>previous(C::<a href="#type-mpd_conn">mpd_conn()</a>) -&gt; ok | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Plays previous song in the playlist.</p>
+
+<h3 class="function"><a name="random-2">random/2</a></h3>
+<div class="spec">
+<p><tt>random(C::<a href="#type-mpd_conn">mpd_conn()</a>, X2::boolean()) -&gt; ok | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Sets random state.</p>
+
+<h3 class="function"><a name="rename-3">rename/3</a></h3>
+<div class="spec">
+<p><tt>rename(C::<a href="#type-mpd_conn">mpd_conn()</a>, Name::string(), NewName::string()) -&gt; ok | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Renames the playlist Name.m3u to NewName.m3u.</p>
+
+<h3 class="function"><a name="repeat-2">repeat/2</a></h3>
+<div class="spec">
+<p><tt>repeat(C::<a href="#type-mpd_conn">mpd_conn()</a>, X2::boolean()) -&gt; ok | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Sets repeat state.</p>
+
+<h3 class="function"><a name="rm-2">rm/2</a></h3>
+<div class="spec">
+<p><tt>rm(C::<a href="#type-mpd_conn">mpd_conn()</a>, Name::string()) -&gt; ok | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Removes the playlist NAME.m3u from the playlist directory.</p>
+
+<h3 class="function"><a name="save-2">save/2</a></h3>
+<div class="spec">
+<p><tt>save(C::<a href="#type-mpd_conn">mpd_conn()</a>, Name::string()) -&gt; ok | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Saves the current playlist to Name.m3u in the playlist directory.</p>
+
+<h3 class="function"><a name="search-3">search/3</a></h3>
+<div class="spec">
+<p><tt>search(C::<a href="#type-mpd_conn">mpd_conn()</a>, Tag::<a href="#type-tag">tag()</a>, What::string()) -&gt; list() | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Searches for any song with a the specified tag's value containing What.</p>
+
+<h3 class="function"><a name="seek-3">seek/3</a></h3>
+<div class="spec">
+<p><tt>seek(C::<a href="#type-mpd_conn">mpd_conn()</a>, PlaylistPos::integer(), SeekSecs::integer()) -&gt; ok | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Seeks to the position SeekSecs (in seconds) of entry PlaylistPos in
+  the playlist.</p>
+
+<h3 class="function"><a name="seekid-3">seekid/3</a></h3>
+<div class="spec">
+<p><tt>seekid(C::<a href="#type-mpd_conn">mpd_conn()</a>, SongId::integer(), SeekSecs::integer()) -&gt; ok | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Seeks to the position SeekSecs (in seconds) of song SongId.</p>
+
+<h3 class="function"><a name="setvol-2">setvol/2</a></h3>
+<div class="spec">
+<p><tt>setvol(C::<a href="#type-mpd_conn">mpd_conn()</a>, Vol::integer()) -&gt; ok | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Sets volume to Vol, the range of volume is 0-100.</p>
+
+<h3 class="function"><a name="shuffle-1">shuffle/1</a></h3>
+<div class="spec">
+<p><tt>shuffle(C::<a href="#type-mpd_conn">mpd_conn()</a>) -&gt; ok | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Shuffles the current playlist.</p>
+
+<h3 class="function"><a name="shuffle-2">shuffle/2</a></h3>
+<div class="spec">
+<p><tt>shuffle(C::<a href="#type-mpd_conn">mpd_conn()</a>, X2::{Start::integer(), End::integer()}) -&gt; ok | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Shuffles the songs between the Start and End positions in the current
+  playlist. Available since MPD 0.15.</p>
+
+<h3 class="function"><a name="single-2">single/2</a></h3>
+<div class="spec">
+<p><tt>single(C::<a href="#type-mpd_conn">mpd_conn()</a>, State::boolean()) -&gt; ok | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Sets single state. When single is activated, playback is stopped after
+  current song, or song is repeated if the 'repeat' mode is enabled.
+  Available since MPD 0.15.</p>
+
+<h3 class="function"><a name="stats-1">stats/1</a></h3>
+<div class="spec">
+<p><tt>stats(C::<a href="#type-mpd_conn">mpd_conn()</a>) -&gt; list() | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Displays statistics.
+  Returns a proplist containing a subset of the following:
+  <ul>
+    <li>artists: integer: number of artists</li>
+    <li>albums: integer: number of albums</li>
+    <li>songs: integer: number of albums</li>
+    <li>uptime: integer: daemon uptime in seconds</li>
+    <li>playtime: integer: time length of music played</li>
+    <li>db_playtime: integer: sum of all song times in the db</li>
+    <li>db_update: integer: last db update in UNIX time</li>
+  </ul></p>
+
+<h3 class="function"><a name="status-1">status/1</a></h3>
+<div class="spec">
+<p><tt>status(C::<a href="#type-mpd_conn">mpd_conn()</a>) -&gt; list() | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Reports the current status of the player and the volume level.
+  Returns a proplist containing a subset of the following:
+  <ul>
+    <li>volume: integer: 0-100</li>
+    <li>repeat: boolean</li>
+    <li>random: boolean</li>
+    <li>single: boolean</li>
+    <li>consume: boolean</li>
+    <li>playlist: integer: the playlist version number</li>
+    <li>playlistlength: integer: the length of the playlist</li>
+    <li>state: atom: play | stop | pause</li>
+    <li>song: integer: playlist song number of the current song
+        stopped on or playing</li>
+    <li>songid: integer: playlist songid of the current song
+        stopped on or playing </li>
+    <li>time: float: total time elapsed (of current playing/paused song)</li>
+    <li>elapsed: binary: Total time elapsed within the current song, but with
+        higher resolution. </li>
+    <li>bitrate: integer: instantaneous bitrate in kbps</li>
+    <li>xfade: integer: crossfade in seconds</li>
+    <li>audio: binary: sampleRate:bits:channels</li>
+    <li>updatings_db: integer: job id</li>
+    <li>error: binary: if there is an error, returns message here</li>
+  </ul></p>
+
+<h3 class="function"><a name="sticker_delete-3">sticker_delete/3</a></h3>
+<div class="spec">
+<p><tt>sticker_delete(C, Type, Uri) -&gt; any()</tt></p>
+<p> </p>
+</div><p>
+  Delete all stickers associated to the given type and URI.</p>
+
+<h3 class="function"><a name="sticker_delete-4">sticker_delete/4</a></h3>
+<div class="spec">
+<p><tt>sticker_delete(C, Type, Uri, Name) -&gt; any()</tt></p>
+<p> </p>
+</div><p>
+  Delete specific sticker by Type, URI and Name.</p>
+
+<h3 class="function"><a name="sticker_find-4">sticker_find/4</a></h3>
+<div class="spec">
+<p><tt>sticker_find(C::<a href="#type-mpd_conn">mpd_conn()</a>, Type::string(), Uri::string(), Name::string()) -&gt; [[{atom(), string()}]] | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p><p>  
+Search for stickers of the specified type and name below the  
+specified URI prefix (can be empty to retrieve all stickers).</p>
+ 
+  Upon success, a list of property lists is returned. Each inner
+  list contains one key (file) to identify the URI and all the
+  associated key-value pairs as parsed from the stickers.</p>
+
+<h3 class="function"><a name="sticker_get-4">sticker_get/4</a></h3>
+<div class="spec">
+<p><tt>sticker_get(C::<a href="#type-mpd_conn">mpd_conn()</a>, Type::string(), Uri::string(), Name::string()) -&gt; string() | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Get value of specific sticker by Type, URI and Name.</p>
+
+<h3 class="function"><a name="sticker_list-3">sticker_list/3</a></h3>
+<div class="spec">
+<p><tt>sticker_list(C::<a href="#type-mpd_conn">mpd_conn()</a>, Type::string(), Uri::string()) -&gt; [{atom(), string()}] | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Retrieve all stickers associated to the given type and URI.</p>
+
+<h3 class="function"><a name="sticker_set-5">sticker_set/5</a></h3>
+<div class="spec">
+<p><tt>sticker_set(C::<a href="#type-mpd_conn">mpd_conn()</a>, Type::string(), Uri::string(), Name::string(), Value::string()) -&gt; ok | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Assign sticker value by Type, URI and Name.</p>
+
+<h3 class="function"><a name="stop-1">stop/1</a></h3>
+<div class="spec">
+<p><tt>stop(C::<a href="#type-mpd_conn">mpd_conn()</a>) -&gt; ok | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Stops playing.</p>
+
+<h3 class="function"><a name="swap-3">swap/3</a></h3>
+<div class="spec">
+<p><tt>swap(C::<a href="#type-mpd_conn">mpd_conn()</a>, PlaylistPos1::integer(), PlaylistPos2::integer()) -&gt; ok | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Swaps the positions of songs at PlaylistPos1 and PlaylistPos2.</p>
+
+<h3 class="function"><a name="swapid-3">swapid/3</a></h3>
+<div class="spec">
+<p><tt>swapid(C::<a href="#type-mpd_conn">mpd_conn()</a>, SongId1::integer(), SongId2::integer()) -&gt; ok | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Swaps the positions of songs SongId1 and SongId2.</p>
+
+<h3 class="function"><a name="tagtypes-1">tagtypes/1</a></h3>
+<div class="spec">
+<p><tt>tagtypes(C::<a href="#type-mpd_conn">mpd_conn()</a>) -&gt; [binary()] | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Shows a list of available song metadata.</p>
+
+<h3 class="function"><a name="update-1">update/1</a></h3>
+<div class="spec">
+<p><tt>update(C::<a href="#type-mpd_conn">mpd_conn()</a>) -&gt; integer() | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Updates the music database.
+  Returns the job id requested for your update, which is displayed in
+  status, while the requested update is happening.</p>
+
+<h3 class="function"><a name="update-2">update/2</a></h3>
+<div class="spec">
+<p><tt>update(C::<a href="#type-mpd_conn">mpd_conn()</a>, Uri::string()) -&gt; integer() | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Updates the music database. Uri is a particular directory or
+  song/file to update.
+  Returns the job id requested for your update, which is displayed in
+  status, while the requested update is happening.</p>
+
+<h3 class="function"><a name="urlhandlers-1">urlhandlers/1</a></h3>
+<div class="spec">
+<p><tt>urlhandlers(C::<a href="#type-mpd_conn">mpd_conn()</a>) -&gt; [binary()] | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Gets a list of available URL handlers.</p>
+
+<h3 class="function"><a name="version-1">version/1</a></h3>
+<div class="spec">
+<p><tt>version(Connection::<a href="#type-mpd_conn">mpd_conn()</a>) -&gt; string()</tt><br></p>
+<p> </p>
+</div><p>
+  Returns a string representing the MPD version number for Connection</p>
+<hr>
+
+<div class="navbar"><a name="#navbar_bottom"></a><table width="100%" border="0" cellspacing="0" cellpadding="2" summary="navigation bar"><tr><td><a href="overview-summary.html" target="overviewFrame">Overview</a></td><td><a href="http://www.erlang.org/"><img src="erlang.png" align="right" border="0" alt="erlang logo"></a></td></tr></table></div>
+<p><i>Generated by EDoc</i></p>
+</body>
+</html>
