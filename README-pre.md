@@ -18,7 +18,7 @@ Foreword
 
 This is a fork of the original [erlmpd](https://github.com/caolan/erlmpd)
 library by [Caolan](https://github.com/caolan). The original README content
-is kept in `READEM-original.txt` and reads as follows:
+is kept in `README-original.txt` and reads as follows:
 
 > A simple client library for communicating with MPD (<http://mpd.wikia.com>) -
 > "a flexible, powerful, server-side application for playing music"
@@ -113,6 +113,38 @@ documentation generated from the source code under `src/erlmpd.erl`.
 A (potentially outdated) copy of the generated documentation can also be
 found on the website: <https://masysma.net/32/erlmpd_att/erlmpd.html>.
 
+Repository Structure
+====================
+
+The files in the repository are structured as follows:
+
+~~~
+bo-erlmpd/
+  |
+  +-- erlmpd_att/            -- documentation resources
+  |
+  +-- src/
+  |    |
+  |    +-- erlmpd.erl        -- core of the implementation
+  |    |
+  |    +-- ...               -- OTP auxiliary files
+  |
+  +-- support/
+  |    |
+  |    +-- include.mk        -- Makefile snippet/original build instructions
+  |
+  +-- rebar.config           -- Manifest for rebar3 integration
+  |
+  +-- README.md              -- Ma_Sys.ma-provided README documentation
+  |
+  +-- README-original.txt    -- Original README documentation
+  |
+  +-- debian-changelog.txt   -- Files related to MDPC 2.0 Debian Package
+  +-- build.xml                 Build (probably not needed by most developers)
+  |
+  +-- LICENSe                -- GPL v3 copy
+~~~
+
 Branch Management
 =================
 
@@ -168,7 +200,20 @@ package for this repository by running the following command:
 
 	ant package
 
-Contact
-=======
+Contact and Future Directions
+=============================
+
+The original code worked well even after 15 years of not being changed at all.
+Hence I expect this library to not require frequent changes. When client
+development requires access to them, new API functions can of course be added.
 
 For questions pertaining to this fork, please write to `info@masysma.net`.
+
+References
+==========
+
+ * Erlmpd documentation: <https://masysma.net/32/erlmpd_att/erlmpd.html>
+ * Erlmpd fork repository: <https://www.github.com/m7a/bo-erlmpd>
+ * Music Player Daemon: <https://musicpd.org/>
+ * MPD Protocol: <https://mpd.readthedocs.io/en/latest/protocol.html>
+ * Original erlmpd repository: <https://github.com/caolan/erlmpd>
