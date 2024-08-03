@@ -1,3 +1,10 @@
+mdvl-erlmpd (1.0.2) stable; urgency=medium
+
+  * Update package to include new search/2 feature and correct
+    generation of queries from filter expressions.
+
+ -- Ma_Sys.ma Linux-Fan <info@masysma.net>  Sat, 03 Aug 2024 16:36:51 +0200
+
 mdvl-erlmpd (1.0.1) stable; urgency=medium
 
   * Trigger build
