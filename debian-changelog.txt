@@ -1,3 +1,9 @@
+mdvl-erlmpd (1.0.3) stable; urgency=medium
+
+  * Rebuild package to include toggleoutput/1
+
+ -- Ma_Sys.ma Linux-Fan <info@masysma.net>  Thu, 15 Aug 2024 18:24:52 +0200
+
 mdvl-erlmpd (1.0.2) stable; urgency=medium
 
   * Update package to include new search/2 feature and correct
