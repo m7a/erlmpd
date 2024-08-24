@@ -56,8 +56,10 @@ consisting of several operators.</p>
   </tbody></table></p>
 
 <h3 class="typedecl"><a name="type-filter_op">filter_op()</a></h3>
-<p><tt>filter_op() = eq | ne | contains | starts_with | match | mismatch</tt></p>
-<p>  <table cellpadding="2" cellspacing="0" border="1"><thead>
+<p><tt>filter_op() = <a href="#type-generic_op">generic_op()</a> | ne | match | mismatch</tt></p>
+<p><p>  Filter operators are used in filters of type tagop (see type filter()).</p>
+ 
+  <table cellpadding="2" cellspacing="0" border="1"><thead>
   <tr><th>Operator  </th><th>Protocol   </th><th>Description</th></tr>
   </thead><tbody>
   <tr><td>eq        </td><td>==         </td><td>Test for equality</td></tr>
@@ -73,6 +75,10 @@ consisting of several operators.</p>
                          <td>Negate result of regular expression test</td></tr>
   </tbody></table></p>
 
+<h3 class="typedecl"><a name="type-generic_op">generic_op()</a></h3>
+<p><tt>generic_op() = eq | contains | starts_with</tt></p>
+
+
 <h3 class="typedecl"><a name="type-mpd_conn">mpd_conn()</a></h3>
 <p><tt>mpd_conn() = #mpd_conn{port = port(), version = string()}</tt></p>
 
@@ -85,9 +91,48 @@ consisting of several operators.</p>
 <p><tt>network_error() = closed | <a href="http://www.erlang.org/edoc/doc/kernel/doc/inet.html#type-posix">inet:posix()</a></tt></p>
 
 
+<h3 class="typedecl"><a name="type-sticker_op">sticker_op()</a></h3>
+<p><tt>sticker_op() = <a href="#type-generic_op">generic_op()</a> | lt | gt | str_eq | str_gt | str_lt</tt></p>
+<p><p>  Sticker Operators follow slightly different interpretation compared to  
+the ones used in filters. Additionally, only one sticker can be compared  
+using an operator in a given sticker_find/7.</p>
+ 
+  <table cellpadding="2" cellspacing="0" border="1"><thead>
+  <tr><th>Operator  </th><th>Protocol   </th><th>Description</th></tr>
+  </thead><tbody>
+  <tr><td>eq        </td><td>eq         </td>
+                         <td>Test for numeric equality</td></tr>
+  <tr><td>lt        </td><td>lt         </td>
+                         <td>Test for numeric less than</td></tr>
+  <tr><td>gt        </td><td>gt         </td>
+                         <td>Test for numeric greater than</td></tr>
+  <tr><td>contains  </td><td>contains   </td>
+                         <td>Test for substring in any location</td></tr>
+  <tr><td>starts_with</td><td>starts_with</td>
+                         <td>Test for substring at begin of value</td></tr>
+  <tr><td>str_eq    </td><td>=</td>
+                         <td>Test for string equality</td></tr>
+  <tr><td>str_gt  </td><td>&gt;</td>
+                         <td>Tests for lexicographical greater than</td></tr>
+  <tr><td>str_lt  </td><td>&lt;</td>
+                         <td>Tests for lexicographical lower than</td></tr>
+  </tbody></table></p>
+
+<h3 class="typedecl"><a name="type-sticker_sort_option">sticker_sort_option()</a></h3>
+<p><tt>sticker_sort_option() = {sort, uri | value | value_int}</tt></p>
+
+
 <h3 class="typedecl"><a name="type-tag">tag()</a></h3>
 <p><tt>tag() = artist | albumartist | album | title | track | genre | disc | date</tt></p>
 
+
+<h3 class="typedecl"><a name="type-window_option">window_option()</a></h3>
+<p><tt>window_option() = {window, Start::integer(), End::integer()}</tt></p>
+<p>  Certain MPD commands accept sort and window options to enforce a given
+  output ordering for the results or that only a subset of the results is
+  returned. When a command accepts this type as input, the empty list []
+  or a proplist with at most one sort and one window option can be provided
+  to make use of this feature.</p>
 
 <h2><a name="index">Function Index</a></h2>
 <table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#add-2">add/2</a></td><td>
@@ -275,6 +320,9 @@ Query the list of partitions.</td></tr>
   Removes the playlist NAME.m3u from the playlist directory.</td></tr>
 <tr><td valign="top"><a href="#save-2">save/2</a></td><td>
   Saves the current playlist to Name.m3u in the playlist directory.</td></tr>
+<tr><td valign="top"><a href="#search-2">search/2</a></td><td>
+  Searches songs in the db that match the given filter
+  It is similar to find/2, but case-insensitive.</td></tr>
 <tr><td valign="top"><a href="#search-3">search/3</a></td><td>
   Searches for any song with a the specified tag's value containing What.</td></tr>
 <tr><td valign="top"><a href="#seek-3">seek/3</a></td><td>
@@ -302,6 +350,10 @@ Query the list of partitions.</td></tr>
 <tr><td valign="top"><a href="#sticker_find-4">sticker_find/4</a></td><td>  
 Search for stickers of the specified type and name below the  
 specified URI prefix (can be empty to retrieve all stickers).</td></tr>
+<tr><td valign="top"><a href="#sticker_find-7">sticker_find/7</a></td><td>
+  Like sticker_find/4 but additionally allows specifying exactly one
+  operator to compare the sticker against and also offers search
+  ordering and pagination capabilities.</td></tr>
 <tr><td valign="top"><a href="#sticker_get-4">sticker_get/4</a></td><td>
   Get value of specific sticker by Type, URI and Name.</td></tr>
 <tr><td valign="top"><a href="#sticker_list-3">sticker_list/3</a></td><td>
@@ -316,6 +368,8 @@ specified URI prefix (can be empty to retrieve all stickers).</td></tr>
   Swaps the positions of songs SongId1 and SongId2.</td></tr>
 <tr><td valign="top"><a href="#tagtypes-1">tagtypes/1</a></td><td>
   Shows a list of available song metadata.</td></tr>
+<tr><td valign="top"><a href="#toggleoutput-2">toggleoutput/2</a></td><td>
+  Toggles output with id OutputId.</td></tr>
 <tr><td valign="top"><a href="#update-1">update/1</a></td><td>
   Updates the music database.</td></tr>
 <tr><td valign="top"><a href="#update-2">update/2</a></td><td>
@@ -1020,6 +1074,14 @@ information about the partition (as per the MPD protocol spec).</p>
 </div><p>
   Saves the current playlist to Name.m3u in the playlist directory.</p>
 
+<h3 class="function"><a name="search-2">search/2</a></h3>
+<div class="spec">
+<p><tt>search(C::<a href="#type-mpd_conn">mpd_conn()</a>, Filter::<a href="#type-filter">filter()</a>) -&gt; list() | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Searches songs in the db that match the given filter
+  It is similar to find/2, but case-insensitive.</p>
+
 <h3 class="function"><a name="search-3">search/3</a></h3>
 <div class="spec">
 <p><tt>search(C::<a href="#type-mpd_conn">mpd_conn()</a>, Tag::<a href="#type-tag">tag()</a>, What::string()) -&gt; list() | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
@@ -1146,6 +1208,15 @@ specified URI prefix (can be empty to retrieve all stickers).</p>
   list contains one key (file) to identify the URI and all the
   associated key-value pairs as parsed from the stickers.</p>
 
+<h3 class="function"><a name="sticker_find-7">sticker_find/7</a></h3>
+<div class="spec">
+<p><tt>sticker_find(C::<a href="#type-mpd_conn">mpd_conn()</a>, Type::string(), Uri::string(), Name::string(), Op::<a href="#type-sticker_op">sticker_op()</a>, CompareValue::string(), Options::[<a href="#type-window_option">window_option()</a> | <a href="#type-sticker_sort_option">sticker_sort_option()</a>]) -&gt; [[{atom(), string()}]] | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Like sticker_find/4 but additionally allows specifying exactly one
+  operator to compare the sticker against and also offers search
+  ordering and pagination capabilities.</p>
+
 <h3 class="function"><a name="sticker_get-4">sticker_get/4</a></h3>
 <div class="spec">
 <p><tt>sticker_get(C::<a href="#type-mpd_conn">mpd_conn()</a>, Type::string(), Uri::string(), Name::string()) -&gt; string() | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
@@ -1194,6 +1265,13 @@ specified URI prefix (can be empty to retrieve all stickers).</p>
 <p> </p>
 </div><p>
   Shows a list of available song metadata.</p>
+
+<h3 class="function"><a name="toggleoutput-2">toggleoutput/2</a></h3>
+<div class="spec">
+<p><tt>toggleoutput(C::<a href="#type-mpd_conn">mpd_conn()</a>, OutputId::integer()) -&gt; ok | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Toggles output with id OutputId</p>
 
 <h3 class="function"><a name="update-1">update/1</a></h3>
 <div class="spec">

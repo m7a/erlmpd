@@ -1,3 +1,10 @@
+mdvl-erlmpd (1.0.4) stable; urgency=medium
+
+  * Build first version that is intended to be uploadeded to
+    master on the Ma_Sys.ma fork
+
+ -- Ma_Sys.ma Linux-Fan <info@masysma.net>  Sun, 25 Aug 2024 01:10:56 +0200
+
 mdvl-erlmpd (1.0.3) stable; urgency=medium
 
   * Rebuild package to include toggleoutput/1

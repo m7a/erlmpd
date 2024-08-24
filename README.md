@@ -82,9 +82,9 @@ Eshell V13.1.5  (abort with ^G)
 
 This demonstrates establishing a connection with `erlmpd:connect/2` and
 then querying of the status with `erlmpd:status/1`. For interactive usage it
-is important to remember that there is a pretty short timeout before the
-connection cannot be used anymore, hence in the example, the status is queried
-from within the same line.
+is important to remember that there is a short timeout before the connection
+cannot be used anymore, hence in the example, the status is queried from within
+the same line.
 
 To make use of the library in a rebar3-enabled project, declare a dependency to
 it as follows:
@@ -142,7 +142,7 @@ bo-erlmpd/
   +-- debian-changelog.txt   -- Files related to MDPC 2.0 Debian Package
   +-- build.xml                 Build (probably not needed by most developers)
   |
-  +-- LICENSe                -- GPL v3 copy
+  +-- LICENSE                -- GPL v3 copy
 ~~~
 
 Branch Management
@@ -163,7 +163,7 @@ My current development approach is to attempt to implement all features and
 bug fixes on branch `masysma_changes` and then merge them into `master`.
 
 The default `master` should be OK for many use cases. It contains more code,
-hough. If an auditable change history is of importance to you, consider using
+though. If an auditable change history is of importance to you, consider using
 the `masysma_changes` branch directly.
 
 License
