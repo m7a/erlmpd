@@ -144,6 +144,9 @@ using an operator in a given sticker_find/7.</p>
 <tr><td valign="top"><a href="#addid_relative-3">addid_relative/3</a></td><td>
   Like addid, but always interprets Pos as an offset relative
   to the currently playing song.</td></tr>
+<tr><td valign="top"><a href="#albumart-2">albumart/2</a></td><td>  
+Queries the album art for the given song and returns an iolist  
+with the file contents.</td></tr>
 <tr><td valign="top"><a href="#clear-1">clear/1</a></td><td>
   Clears the current playlist.</td></tr>
 <tr><td valign="top"><a href="#clearerror-1">clearerror/1</a></td><td>
@@ -312,6 +315,9 @@ Query the list of partitions.</td></tr>
   Plays previous song in the playlist.</td></tr>
 <tr><td valign="top"><a href="#random-2">random/2</a></td><td>
   Sets random state.</td></tr>
+<tr><td valign="top"><a href="#readpicture-2">readpicture/2</a></td><td>  
+Queries the picture for the given song and returns an iolist  
+with the file contents.</td></tr>
 <tr><td valign="top"><a href="#rename-3">rename/3</a></td><td>
   Renames the playlist Name.m3u to NewName.m3u.</td></tr>
 <tr><td valign="top"><a href="#repeat-2">repeat/2</a></td><td>
@@ -416,6 +422,18 @@ specified URI prefix (can be empty to retrieve all stickers).</td></tr>
   Like addid, but always interprets Pos as an offset relative
   to the currently playing song. Use Pos = 0 to add an entry right
   after the currently playing song.</p>
+
+<h3 class="function"><a name="albumart-2">albumart/2</a></h3>
+<div class="spec">
+<p><tt>albumart(C::<a href="#type-mpd_conn">mpd_conn()</a>, URI::string()) -&gt; {unknown, iolist()} | {error, <a href="#type-any_error">any_error()</a> | enosize}</tt><br></p>
+<p> </p>
+</div><p><p>  
+Queries the album art for the given song and returns an iolist  
+with the file contents.</p>
+ 
+  The first part of a successful return value for this function is
+  always 'unknown'. This could later be replaced by a MIME-type if
+  MPD gains support for this.</p>
 
 <h3 class="function"><a name="clear-1">clear/1</a></h3>
 <div class="spec">
@@ -1045,6 +1063,22 @@ information about the partition (as per the MPD protocol spec).</p>
 <p> </p>
 </div><p>
   Sets random state.</p>
+
+<h3 class="function"><a name="readpicture-2">readpicture/2</a></h3>
+<div class="spec">
+<p><tt>readpicture(C::<a href="#type-mpd_conn">mpd_conn()</a>, URI::string()) -&gt; {unknown | binary(), iolist()} | {error, <a href="#type-any_error">any_error()</a> | enosize}</tt><br></p>
+<p> </p>
+</div><p><p>  
+Queries the picture for the given song and returns an iolist  
+with the file contents.</p>
+ 
+  <p>The first part of a successful return value for this function is  
+either the atom unknown or a string with the MIME type of the  
+file if this was provied by MPD.</p>
+ 
+  Note that the iolist is empty in event that MPD doesn't have any
+  album art associated to the given URI but the command executed
+  syuccessfully.</p>
 
 <h3 class="function"><a name="rename-3">rename/3</a></h3>
 <div class="spec">
