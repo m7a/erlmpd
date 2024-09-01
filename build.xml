@@ -7,7 +7,8 @@
 <property name="mdpc.section"   value="sound"/>
 <property name="mdpc.descrs"    value="An Erlang client module for MPD"/>
 <property name="mdpc.arch"      value="all"/>
-<property name="mdpc.bdep"      value="rebar3, debhelper-compat (= 13)"/>
+<property name="mdpc.bdep"
+	>rebar3, debhelper-compat (= 13), config-package-dev</property>
 <property name="mdpc.depends"   value="erlang-base"/>
 <property name="mdpc.descrl">
  A simple client library for communicating with MPD (http://mpd.wikia.com)
