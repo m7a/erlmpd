@@ -1,3 +1,9 @@
+mdvl-erlmpd (1.0.6) stable; urgency=medium
+
+  * Trigger rebuild
+
+ -- Ma_Sys.ma Linux-Fan <info@masysma.net>  Mon, 02 Sep 2024 18:23:27 +0200
+
 mdvl-erlmpd (1.0.5) stable; urgency=medium
 
   * Add missing dependency.
