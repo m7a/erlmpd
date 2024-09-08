@@ -192,6 +192,145 @@ possible to create and modify this fork in the first place.
 Note that the full text of the GPL is stored in file `LICENSE` in the
 repository.
 
+API Support Status
+==================
+
+Table updated 2024-09-08. Some development notes about the API support status:
+
+ * Unsupported commands may be available through the `command` APIs, but it may
+   be better to just add the missing function in erlmpd and send a patch!
+ * Filters are supported except for the new _Explicit case-sensitivity_ API.
+   If filters are not supported for a given command yet, the existing functions
+   for filters in ERLMPD may make adding this functionality easier
+ * In many commands, sort and window parameters are not supported yet. Adding
+   them could be done in a similar way like with `sticker_find/7`.
+
+MPD Protocol         ERLMPD API                          Support  Comment
+-------------------  ----------------------------------  -------  -------------------------------
+`clearerror`         `clearerror/1`                      Yes
+`currentsong`        `currentsong/1`                     Yes
+`idle`               `idle/1`, `idle/2`                  Yes
+                     `idle_send/2`, `idle_receive/1`      
+`status`             `status/1`                          Yes
+`stats`              `stats/1`                           Yes
+`consume`            `consume/2`                         Yes
+`crossfade`          `crossfade/2`                       Yes
+`mixrampdb`                                              No       Probably easy to add
+`mixrampdelay`                                           No       Probably easy to add
+`random`             `random/2`                          Yes
+`repeat`             `repeat/2`                          Yes
+`setvol`             `setvol/2`                          Yes
+`getvol`                                                 No       Probably easy to add
+`single`             `single/2`                          Yes
+`replay_gain_mode`                                       No       Probably easy to add
+`replay_gain_status`                                     No       Probably easy to add
+`volume`                                                 No       Probably easy to add
+`next`               `next/1`                            Yes
+`pause`              `pause/2`                           Yes
+`play`               `play/1`, `play/2`                  Yes
+`playid`             `playid/1`, `playid/2`              Yes
+`previous`           `previous/1`                        Yes
+`seek`               `seek/3`                            Yes
+`seekid`             `seekid/3`                          Yes
+`seekcur`                                                No       Probably easy to add
+`stop`               `stop/1`                            Yes
+`add`                `add/2`                             Partial  `POSITION` not supported
+`addid`              `addid/3`, `addid_relative/3`       Yes
+`clear`              `clear/1`                           Yes
+`delete`             `delete/2`                          Partial  `START:END` not supported
+`deleteid`           `deleteid/1`, `deleteids/2`         Yes
+`move`               `move/3`                            Yes
+`moveid`             `moveid/3`                          Yes
+`playlist`           `playlist/1`                        Yes
+`playlistfind`       `playlistfind/3`                    No       Older syntax with limitations
+`playlistid`         `playlistid/1`, `playlistid/2`      Yes
+`playlistinfo`       `playlistinfo/1`, `playlistinfo/2`  Yes
+`playlistsearch`     `playlistsearch/3`                  No       Older syntax with limitations
+`plchanges`          `plchanges/2`                       Partial  `START:END` not supported
+`plchangesposid`     `plchangesposid/2`                  Partial  `START:END` not supported
+`prio`                                                   No       Probably easy to add
+`prioid`                                                 No       Probably easy to add
+`rangeid`                                                No       Probably easy to add
+`shuffle`            `shuffle/1`, `shuffle/2`            Yes
+`swap`               `swap/3`                            Yes
+`swapid`             `swapid/3`                          Yes
+`addtagid`           `addtagid/3`                        No
+`cleartagid`         `cleartagid/3`                      No
+`listplaylist`       `listplaylist/2`                    Partial  `START:END` not supported
+`listplaylistinfo`   `listplaylistinfo/2`                Partial  `START:END` not supported
+`searchplaylist`                                         No       Probably easy to add
+`listplaylists`      `listplaylists/1`                   Yes
+`load`               `load/2`                            Partial  `START:END` and `POSITION` not supported
+`playlistadd`        `playlistadd/3`                     Partial  `POSITION` not supported
+`playlistclear`      `playlistclear/2`                   Yes
+`playlistdelete`     `playlistdelete/3`                  Yes
+`playlistlength`                                         No       Probably easy to add
+`playlistmove`       `playlistmove/4`                    Partial  `START:END` not supported
+`rename`             `rename/3`                          Yes
+`rm`                 `rm/2`                              Yes
+`save`               `save/2`                            Partial  `MODE` not supported
+`albumart`           `albumart/2`                        Yes
+`count`              `count/2`, `count/3`,               Yes
+                     `count_group/3`                      
+`getfingerprint`                                         No       Probably easy to add
+`find`               `find/2`, `find/3`                  Partial  `WINDOW` not supported
+`findadd`                                                No
+`list`               `list/2`                            No       Only supports `list TYPE` syntax
+`listall`            `listall/1`, `listall/2`            Yes
+`listallinfo`        `listallinfo/1`, `listallinfo/2`    Yes
+`listfiles`                                              No
+`lsinfo`             `lsinfo/2`                          Yes
+`readcomments`                                           No
+`readpicture`        `readpicture/2`                     Yes
+`search`             `search/2`, `search/3`              Partial  `sort` and `window` not supported
+`searchadd`                                              No
+`searchaddpl`                                            No
+`searchcount`                                            No
+`update`             `update/1`, `update/2`              Yes
+`rescan`                                                 No
+`mount`                                                  No       _Mounts and neighbors_ API not supported
+`unmount`                                                No
+`listmounts`                                             No
+`listneighbors`                                          No
+`sticker get`        `sticker_get/4`                     Yes
+`sticker set`        `sticker_set/5`                     Yes
+`sticker delete`     `sticker_delete/3`,                 Yes
+                     `sticker_delete/4`                   
+`sticker list`       `sticker_list/3`                    Yes
+`sticker find`       `sticker_find/4`, `sticker_find/7`  Partial  `sort` and `window` only supported for `{NAME} = {VALUE}` syntax
+`stickernames`                                           No
+`stickertypes`                                           No
+`close`              `close/1`                           Yes
+`kill`               `kill/1`                            Yes
+`password`           `connect/3`, `password/1`           Yes
+`ping`               `ping/1`                            Yes
+`binarylimit`                                            No
+`tagtypes`           `tagtypes/1`                        Yes
+`tagtypes disable`                                       No       Probably easy to add
+`tagtypes enable`                                        No       Probably easy to add
+`tagtypes clear`                                         No       Probably easy to add
+`tagtypes all`                                           No       Probably easy to add
+`partition`          `partition/2`                       Yes
+`listpartitions`     `listpartitions/1`                  Yes
+`newpartition`       `newpartition/2`                    Yes
+`delpartition`       `delpartition/2`                    Yes
+`moveoutput`         `moveoutput/2`                      Yes
+`disableoutput`      `disableoutput/2`                   Yes
+`enableoutput`       `enableoutput/2`                    Yes
+`toggleoutput`       `toggleoutput/2`                    Yes
+`outputs`            `outputs/1`                         Yes
+`outputset`                                              No
+`config`                                                 No       Probably easy to add
+`commands`           `commands/1`                        Yes
+`notcommands`        `notcommands/1`                     Yes
+`urlhandlers`        `urlhandlers/1`                     Yes
+`decoders`                                               No       Probably easy to add
+`subscribe`                                              No       _Client to client_ API not supported
+`unsubscribe`                                            No
+`channels`                                               No
+`readmessages`                                           No
+`sendmessage`                                            No
+
 MDPC 2.0 Integration
 ====================
 
