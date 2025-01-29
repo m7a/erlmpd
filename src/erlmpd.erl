@@ -32,7 +32,7 @@
          rename/3, rm/2, save/2]).
 
 %% The music database
--export([albumart/2, count/2, count/3, count_group/3, find/2, find/3,
+-export([albumart/2, count/2, count/3, count_group/3, find/2, find/3, find_ex/3,
 	list/2, list/3, listall/1, listall/2, listallinfo/1, listallinfo/2,
 	lsinfo/1, lsinfo/2, readpicture/2, search/3, search/2,
 	update/1, update/2]).
@@ -159,6 +159,15 @@
 %% returned. When a command accepts this type as input, the empty list []
 %% or a proplist with at most one sort and one window option can be provided
 %% to make use of this feature.
+
+-type sort_option()         :: {sort, tag() |
+				'-artist' | '-albumartist' | '-album' |
+				'-title' | '-track' | '-genre' | '-disc' |
+				'-date' |
+				albumartistsort | titlesort | composersort |
+				'-albumartistsort' | '-titlesort' |
+				'-composersort'}.
+%% A `-` prefix to a sort option causes the order of results to be inverted
 
 -type sticker_sort_option() :: {sort, uri | value | value_int}.
 
@@ -1138,6 +1147,19 @@ find(C=#mpd_conn{}, Tag, X) ->
 -spec find(C::mpd_conn(), Filter::filter()) -> list() | {error, any_error()}.
 find(C, Filter) ->
     parse_songs(command(C, "find", [ex_parse(Filter)])).
+
+%%-------------------------------------------------------------------
+%% @doc
+%% Finds songs in the db that match the given filter optionally
+%% providing sort and window options.
+%% @end
+%%-------------------------------------------------------------------
+-spec find_ex(C::mpd_conn(), Filter::filter(),
+				Options::[window_option() | sort_option()]) ->
+				list() | {error, any_error()}.
+find_ex(C, Filter, Options) ->
+	parse_songs(command(C, "find", [ex_parse(Filter)], ?TIMEOUT,
+				sort_window_options_to_string(Options))).
 
 %%-------------------------------------------------------------------
 %% @doc
