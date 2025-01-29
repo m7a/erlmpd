@@ -167,7 +167,7 @@
 				albumartistsort | titlesort | composersort |
 				'-albumartistsort' | '-titlesort' |
 				'-composersort'}.
-%% A `-` prefix to a sort option causes the order of results to be inverted
+%% A '-' prefix to a sort option causes the order of results to be inverted
 
 -type sticker_sort_option() :: {sort, uri | value | value_int}.
 
