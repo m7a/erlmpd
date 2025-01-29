@@ -91,6 +91,10 @@ consisting of several operators.</p>
 <p><tt>network_error() = closed | <a href="http://www.erlang.org/edoc/doc/kernel/doc/inet.html#type-posix">inet:posix()</a></tt></p>
 
 
+<h3 class="typedecl"><a name="type-sort_option">sort_option()</a></h3>
+<p><tt>sort_option() = {sort, <a href="#type-tag">tag()</a> | '-artist' | '-albumartist' | '-album' | '-title' | '-track' | '-genre' | '-disc' | '-date' | albumartistsort | titlesort | composersort | '-albumartistsort' | '-titlesort' | '-composersort'}</tt></p>
+<p>  A '-' prefix to a sort option causes the order of results to be inverted</p>
+
 <h3 class="typedecl"><a name="type-sticker_op">sticker_op()</a></h3>
 <p><tt>sticker_op() = <a href="#type-generic_op">generic_op()</a> | lt | gt | str_eq | str_gt | str_lt</tt></p>
 <p><p>  Sticker Operators follow slightly different interpretation compared to  
@@ -209,6 +213,9 @@ tag.</td></tr>
   Finds songs in the db that match the given filter.</td></tr>
 <tr><td valign="top"><a href="#find-3">find/3</a></td><td>
   Finds songs in the db that are exactly What.</td></tr>
+<tr><td valign="top"><a href="#find_ex-3">find_ex/3</a></td><td>
+  Finds songs in the db that match the given filter optionally
+  providing sort and window options.</td></tr>
 <tr><td valign="top"><a href="#idle-1">idle/1</a></td><td>
   Waits until there is a noteworthy change in any of MPD's subsystems.</td></tr>
 <tr><td valign="top"><a href="#idle-2">idle/2</a></td><td>
@@ -648,6 +655,14 @@ tag.</p>
 </div><p>
   Finds songs in the db that are exactly What. Tag should be album,
   artist, or title. X is what to find.</p>
+
+<h3 class="function"><a name="find_ex-3">find_ex/3</a></h3>
+<div class="spec">
+<p><tt>find_ex(C::<a href="#type-mpd_conn">mpd_conn()</a>, Filter::<a href="#type-filter">filter()</a>, Options::[<a href="#type-window_option">window_option()</a> | <a href="#type-sort_option">sort_option()</a>]) -&gt; list() | {error, <a href="#type-any_error">any_error()</a>}</tt><br></p>
+<p> </p>
+</div><p>
+  Finds songs in the db that match the given filter optionally
+  providing sort and window options.</p>
 
 <h3 class="function"><a name="idle-1">idle/1</a></h3>
 <div class="spec">

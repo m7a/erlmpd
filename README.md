@@ -11,7 +11,7 @@ x-masysma-website: https://masysma.net/32/erlmpd.xhtml
 x-masysma-repository: https://www.github.com/m7a/bo-erlmpd
 x-masysma-copyright: |
   Copyright (c) 2009 Caolan McMahon (caolan@caolanmcmahon.com)
-  Copyright (c) 2024 Ma_Sys.ma (info@masysma.net)
+  Copyright (c) 2024, 2025 Ma_Sys.ma (info@masysma.net)
 ---
 Foreword
 ========
@@ -174,7 +174,7 @@ possible to create and modify this fork in the first place.
 
 	ERLMPD - Erlang MPD Client Library
 	Copyright (c) 2009 Caolan McMahon <caolan@caolanmcmahon.com>
-	Copyright (c) 2024 Ma_Sys.ma <info@masysma.net>
+	Copyright (c) 2024, 2025 Ma_Sys.ma <info@masysma.net>
 	
 	This program is free software: you can redistribute it and/or modify it
 	under the terms of the GNU General Public License as published by the
@@ -273,7 +273,7 @@ MPD Protocol         ERLMPD API                          Support  Comment
 `count`              `count/2`, `count/3`,               Yes
                      `count_group/3`                      
 `getfingerprint`                                         No       Probably easy to add
-`find`               `find/2`, `find/3`                  Partial  `WINDOW` not supported
+`find`               `find/2`, `find/3`, `find_ex/3`     Yes
 `findadd`                                                No
 `list`               `list/2`                            No       Only supports `list TYPE` syntax
 `listall`            `listall/1`, `listall/2`            Yes
